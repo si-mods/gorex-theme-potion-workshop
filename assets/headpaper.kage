@@ -16,10 +16,10 @@ func Fragment(dst vec4, pos vec2) vec4 {
 	fb := sin(wp.y*0.9+sin(wp.x*0.023)*5.0)
 	c *= 1 - 0.007*fb
 	c += (hash(floor(wp)) - 0.5) * 0.03
-	// A dashed stitch above the bottom edge.
+	// A dashed stitch along the bottom edge, where no text sits.
 	b := s.y - pos.y
-	if b > 2.5 && b < 3.7 && fract(pos.x/7) < 0.55 {
-		c = mix(vec3(0.885, 0.80, 0.655), vec3(0.45, 0.31, 0.18), Dark)
+	if b > 0.6 && b < 1.9 && fract(pos.x/7) < 0.55 {
+		c = mix(vec3(0.66, 0.50, 0.32), vec3(0.66, 0.48, 0.29), Dark)
 	}
 	return vec4(clamp(c, 0, 1), 1)
 }

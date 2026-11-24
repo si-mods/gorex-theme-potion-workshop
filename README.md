@@ -13,7 +13,7 @@ The look follows the "Potion Workshop" preset of [codex-themes](https://github.c
 ## What it sets
 
 - Seeds: the light and dark palettes of the preset.
-- Shaders: the window background (parchment, lamp glow, motes, bottles and slime), the title bar as a wooden shelf, the sidebar column as paper, and the chosen row and pane header as paper with a stitched edge.
+- Shaders: the window background (parchment, lamp glow, motes, bottles and slime), the title bar as a wooden shelf, the sidebar column as paper, and the chosen row and pane header as paper with a dashed stitch along the edge.
 - Roles: paper tones for the faces in each appearance, `pane.border` in brown.
 - Metrics: corner scale 0.5, 1 DIP borders, rounded then Segoe UI, hard shadows.
 - Glass off. Terminal: Lumina Parchment Light and Lumina Parchment Dark. Wordmark: POTION WORKSHOP.

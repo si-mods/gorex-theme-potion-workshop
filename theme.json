@@ -1,5 +1,6 @@
 {
   "name": "Potion Workshop",
+  "description": "Parchment, gold motes, potion bottles and a slime, all drawn by shaders. The look follows the Potion Workshop preset of codex-themes; the art is new.",
   "seeds": {
     "light": {
       "bgTop": "#f3e6c6",
