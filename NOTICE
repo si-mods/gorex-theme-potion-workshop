@@ -1,0 +1,12 @@
+Potion Workshop theme pack for GoRex
+Copyright (c) 2026 GoRex contributors. Licensed under the MIT License (see LICENSE).
+
+The look of this pack follows the "Potion Workshop" preset of codex-themes
+(https://github.com/freestylefly/codex-themes).
+
+This pack includes no image, code or text of codex-themes. All art in it is
+new and is drawn at run time by the shaders in assets/*.kage from the colors
+and shapes in this repository.
+
+The authors of codex-themes do not endorse this pack, and this pack is not
+affiliated with them.

@@ -1,0 +1,152 @@
+{
+  "name": "Potion Workshop",
+  "seeds": {
+    "light": {
+      "bgTop": "#f3e6c6",
+      "bgMid": "#efe0bd",
+      "bgLow": "#ead8b0",
+      "bgBottom": "#e6d2a6",
+      "bgTint": "#b75f2a10",
+      "text": "#5a351d",
+      "textMuted": "#8b6846",
+      "textFaint": "#a68a68",
+      "iconMuted": "#9a7b58",
+      "emptyMark": "#a68a68",
+      "busy": "#6f8a3a",
+      "attention": "#d08a2c",
+      "done": "#3f877d",
+      "exited": "#b09a80",
+      "danger": "#b8432f",
+      "accent": "#b75f2a",
+      "accentHover": "#a65424",
+      "accentPressed": "#934a1f",
+      "accentText": "#fff8e8",
+      "panel": "#fff3d6",
+      "field": "#fff8e8",
+      "fieldBorder": "#d9c09a",
+      "surface": "#fff8e8",
+      "surfaceHover": "#f6e5bd",
+      "surfacePressed": "#efd9a8",
+      "card": "#fff3d6f2",
+      "cardFocused": "#fff8e8",
+      "shadow": "#7e512533",
+      "shadowFocused": "#7e51254d",
+      "backdrop": "#2d1c1214",
+      "pillTint": "#7e512540"
+    },
+    "dark": {
+      "bgTop": "#3a2517",
+      "bgMid": "#2d1c12",
+      "bgLow": "#28180f",
+      "bgBottom": "#24150d",
+      "bgTint": "#dc824810",
+      "text": "#fff0cd",
+      "textMuted": "#c8aa7d",
+      "textFaint": "#9c8462",
+      "iconMuted": "#b39670",
+      "emptyMark": "#9c8462",
+      "busy": "#a9b76c",
+      "attention": "#e8a94f",
+      "done": "#62b9a7",
+      "exited": "#7d6a55",
+      "danger": "#e0614a",
+      "accent": "#dc8248",
+      "accentHover": "#e69462",
+      "accentPressed": "#c9733d",
+      "accentText": "#2d1c12",
+      "panel": "#43291a",
+      "field": "#3a2416",
+      "fieldBorder": "#6b4a2e",
+      "surface": "#49301e",
+      "surfaceHover": "#513421",
+      "surfacePressed": "#5c3c26",
+      "card": "#43291af2",
+      "cardFocused": "#49301e",
+      "shadow": "#00000066",
+      "shadowFocused": "#00000080",
+      "backdrop": "#00000040",
+      "pillTint": "#e0ab6033"
+    }
+  },
+  "roles": {
+    "titleBar.background": {
+      "light": "#f2e2c0",
+      "dark": "#3a2414"
+    },
+    "sideBar.background": {
+      "light": "#f6e5bd",
+      "dark": "#3b2416"
+    },
+    "paneHeader.background": {
+      "light": "#fff3d6",
+      "dark": "#45291a"
+    },
+    "sideBar.tabActiveBackground": {
+      "light": "#fff8e8",
+      "dark": "#4d311d"
+    },
+    "pane.border": {
+      "light": "#7e512542",
+      "dark": "#e0ab604d"
+    },
+    "sideBar.activeGroupTabBackground": {
+      "light": "#fff8e8",
+      "dark": "#4d311d"
+    },
+    "sideBar.activeGroupBackground": {
+      "light": "#7e512514",
+      "dark": "#e0ab6014"
+    }
+  },
+  "terminal": {
+    "light": "Lumina Parchment Light",
+    "dark": "Lumina Parchment Dark"
+  },
+  "assets": {
+    "parchment": "parchment.kage",
+    "shelf": "shelf.kage",
+    "sidepaper": "sidepaper.kage",
+    "rowpaper": "rowpaper.kage",
+    "headpaper": "headpaper.kage"
+  },
+  "shaders": {
+    "api": 1,
+    "background": {
+      "source": "parchment"
+    },
+    "faces": {
+      "titleBar.background": {
+        "source": "shelf"
+      },
+      "sideBar.background": {
+        "source": "sidepaper"
+      },
+      "sideBar.tabActiveBackground": {
+        "source": "rowpaper"
+      },
+      "paneHeader.background": {
+        "source": "headpaper"
+      },
+      "sideBar.activeGroupTabBackground": {
+        "source": "rowpaper"
+      }
+    }
+  },
+  "metrics": {
+    "radius": 0.5,
+    "border": 1,
+    "font": [
+      "rounded",
+      "Segoe UI",
+      "system"
+    ],
+    "shadow": {
+      "scale": 1,
+      "hard": true
+    }
+  },
+  "glass": false,
+  "brand": {
+    "wordmark": "POTION WORKSHOP"
+  }
+}

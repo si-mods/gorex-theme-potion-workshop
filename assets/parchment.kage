@@ -1,0 +1,119 @@
+package main
+
+// Potion Workshop background: parchment with fibers and grain, a warm
+// vignette, slow gold motes, and potion bottles with a small slime in the
+// lower right of the window. All shapes are distance fields; no images.
+
+var Time, Dark float
+var Origin, Window vec2
+
+func hash(p vec2) float {
+	return fract(sin(dot(p, vec2(12.9898, 78.233))) * 43758.5453)
+}
+
+func sdRBox(p, b vec2, r float) float {
+	q := abs(p) - b + r
+	return length(max(q, 0)) + min(max(q.x, q.y), 0) - r
+}
+
+func fill(d float) float {
+	return clamp(0.5-d, 0, 1)
+}
+
+func Fragment(dst vec4, pos vec2) vec4 {
+	wp := pos + Origin
+	uv := wp / Window
+	// Paper, lighter in the middle, darker at the edges.
+	paper := mix(vec3(0.945, 0.885, 0.76), vec3(0.20, 0.125, 0.08), Dark)
+	center := mix(vec3(0.975, 0.93, 0.83), vec3(0.25, 0.16, 0.10), Dark)
+	edge := mix(vec3(0.80, 0.66, 0.46), vec3(0.10, 0.06, 0.035), Dark)
+	d := length((uv - vec2(0.45, 0.42)) * vec2(1.1, 1.0))
+	col := mix(center, paper, clamp(d*1.6, 0, 1))
+	col = mix(col, edge, clamp((d-0.45)*1.4, 0, 1))
+	// A warm lamp glow from the upper left.
+	lg := clamp(1-length((uv-vec2(0.3, 0.25))*vec2(1.0, 1.3))*1.5, 0, 1)
+	col = mix(col, mix(vec3(1.0, 0.95, 0.82), vec3(0.42, 0.24, 0.11), Dark), lg*lg*mix(0.35, 0.6, Dark))
+	// Large soft stains.
+	st := sin(wp.x*0.0071+wp.y*0.0033) * sin(wp.y*0.0083-wp.x*0.0029)
+	col *= 1 - 0.035*st
+	// Fibers: thin wavy lines, here and there.
+	fb := sin(wp.y*0.85+sin(wp.x*0.021+wp.y*0.006)*5.0)
+	mask := clamp(sin(wp.x*0.011+wp.y*0.017)*2-1, 0, 1)
+	col = mix(col, edge, clamp((fb-0.94)*12, 0, 1)*mask*0.22)
+	// Grain.
+	col += (hash(floor(wp)) - 0.5) * mix(0.045, 0.03, Dark)
+
+	// Gold motes rising slowly.
+	gold := mix(vec3(0.86, 0.60, 0.16), vec3(0.98, 0.80, 0.38), Dark)
+	m := 0.0
+	for i := 0; i < 6; i++ {
+		f := float(i)
+		sx := fract(f*0.618 + 0.11)
+		sy := fract(f*0.371 + 0.23)
+		sp := 0.006 + 0.004*fract(f*0.53)
+		c := vec2(sx+0.015*sin(Time*0.4+f*1.7), 1.05-fract(sy+Time*sp)*1.1) * Window
+		r := length(wp - c)
+		tw := 0.6 + 0.4*sin(Time*1.3+f*2.3)
+		m = max(m, (clamp(1.4-r/2.4, 0, 1)+clamp(1-r/16, 0, 1)*0.4)*tw)
+	}
+	col = mix(col, gold, clamp(m, 0, 1)*mix(0.65, 0.8, Dark))
+
+	// Bottles and a slime on a shelf, in the lower right. Each object
+	// draws only inside its own box, which keeps the cost low.
+	p := (wp - (Window - vec2(200, 150))) / 1.1
+	if p.x > -130 && p.x < 140 && p.y > -110 && p.y < 110 {
+		ink := mix(vec3(0.35, 0.21, 0.11), vec3(0.08, 0.045, 0.025), Dark)
+		glass := mix(vec3(0.99, 0.96, 0.90), vec3(0.42, 0.30, 0.21), Dark)
+		cork := mix(vec3(0.72, 0.50, 0.30), vec3(0.50, 0.33, 0.19), Dark)
+		if p.y > 80 {
+			// the shelf and its shadow
+			plank := sdRBox(p-vec2(5, 88), vec2(132, 6), 2)
+			col = mix(col, ink, clamp(1-abs(p.x-5)/150, 0, 1)*clamp(1-abs(p.y-100)/8, 0, 1)*0.35)
+			col = mix(col, ink, fill(plank-2))
+			col = mix(col, mix(vec3(0.80, 0.58, 0.34), vec3(0.42, 0.26, 0.14), Dark), fill(plank))
+		}
+		if p.x < -24 && p.y < 84 {
+			// the round flask of a rose potion
+			fl := length(p-vec2(-70, 40)) - 40
+			fneck := sdRBox(p-vec2(-70, -8), vec2(11, 18), 3)
+			fcork := sdRBox(p-vec2(-70, -30), vec2(14, 8), 3)
+			col = mix(col, ink, fill(min(min(fl, fneck), fcork)-2.5))
+			col = mix(col, cork, fill(fcork))
+			col = mix(col, glass, fill(min(fl, fneck)))
+			col = mix(col, mix(vec3(0.88, 0.48, 0.42), vec3(0.86, 0.45, 0.38), Dark), fill(max(fl+4, 34-p.y)))
+			col = mix(col, vec3(1, 1, 1), fill(sdRBox(p-vec2(-88, 30), vec2(3, 12), 3))*0.7)
+			col = mix(col, vec3(1, 0.95, 0.88), fill(length(p-vec2(-62, 52))-3.5)*0.8)
+		}
+		if abs(p.x) < 32 && p.y < 84 {
+			// the tall bottle of a teal potion
+			tb := sdRBox(p-vec2(0, 22), vec2(26, 58), 12)
+			tneck := sdRBox(p-vec2(0, -44), vec2(10, 14), 3)
+			tcork := sdRBox(p-vec2(0, -62), vec2(13, 8), 3)
+			col = mix(col, ink, fill(min(min(tb, tneck), tcork)-2.5))
+			col = mix(col, cork, fill(tcork))
+			col = mix(col, glass, fill(min(tb, tneck)))
+			col = mix(col, mix(vec3(0.25, 0.53, 0.49), vec3(0.38, 0.72, 0.65), Dark), fill(max(tb+4, 6-p.y)))
+			col = mix(col, vec3(1, 1, 1), fill(sdRBox(p-vec2(-14, 10), vec2(3, 30), 3))*0.7)
+			col = mix(col, vec3(1, 0.95, 0.88), fill(length(p-vec2(8, 40+mod(-Time*9, 30)))-3)*0.8)
+		}
+		q := p - vec2(78, 58)
+		if abs(q.x) < 50 && q.y > -54 && q.y < 26 {
+			// the slime: body, eyes, cheeks, smile and a leaf
+			sl := sdRBox(q, vec2(44, 22), 21)
+			sl = min(sl, length(q-vec2(-4, -14))-24)
+			lf := length((q-vec2(4, -40))*mat2(0.8, 0.6, -0.6, 0.8)/vec2(1, 2.2)) - 6
+			col = mix(col, ink, fill(min(sl, lf)-2.5))
+			col = mix(col, vec3(0.49, 0.55, 0.29), fill(lf))
+			col = mix(col, mix(vec3(0.95, 0.60, 0.50), vec3(0.85, 0.50, 0.42), clamp(q.y/40+0.5, 0, 1)), fill(sl))
+			col = mix(col, vec3(1, 0.93, 0.88), clamp(1-length((q-vec2(-18, -22))/vec2(10, 6)), 0, 1)*0.8)
+			e := vec2(abs(q.x+2)-13, q.y+2)
+			col = mix(col, vec3(0.2, 0.11, 0.07), fill(length(e)-4.5))
+			col = mix(col, vec3(1, 1, 1), fill(length(e-vec2(-1.5, -1.8))-1.5))
+			col = mix(col, vec3(0.97, 0.45, 0.45), fill(length(vec2(abs(q.x+2)-23, q.y-6)/vec2(1.5, 1))-4)*0.6)
+			if q.y > 5 {
+				col = mix(col, vec3(0.2, 0.11, 0.07), fill(abs(length(q-vec2(-2, 4))-6)-1.4))
+			}
+		}
+	}
+	return vec4(clamp(col, 0, 1), 1)
+}

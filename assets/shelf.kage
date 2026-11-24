@@ -1,0 +1,31 @@
+package main
+
+// Potion Workshop title bar: a wooden shelf strip, light oak in the light
+// appearance and dark walnut in the dark, in tones that keep the text
+// readable.
+
+var Dark float
+var Origin vec2
+
+func hash(p vec2) float {
+	return fract(sin(dot(p, vec2(12.9898, 78.233))) * 43758.5453)
+}
+
+func Fragment(dst vec4, pos vec2) vec4 {
+	s := rectSize()
+	wp := pos + Origin
+	y := pos.y / s.y
+	lo := mix(vec3(0.94, 0.86, 0.70), vec3(0.20, 0.12, 0.07), Dark)
+	hi := mix(vec3(0.97, 0.91, 0.78), vec3(0.25, 0.155, 0.09), Dark)
+	g := sin(wp.y*0.55+sin(wp.x*0.008)*4.0+sin(wp.x*0.031)*0.8)
+	knot := clamp(1-length((wp-vec2(220, s.y*0.5))/vec2(26, 5)), 0, 1)
+	c := mix(lo, hi, 0.5+0.5*g)
+	c = mix(c, lo, knot*0.8)
+	c *= 1 - 0.06*y
+	c += (hash(vec2(floor(wp.x/23), floor(wp.y))) - 0.5) * 0.05
+	c += (hash(floor(wp)) - 0.5) * 0.02
+	if pos.y < 1 {
+		c = mix(c, vec3(1, 0.97, 0.9), mix(0.6, 0.12, Dark))
+	}
+	return vec4(clamp(c, 0, 1), 1)
+}
