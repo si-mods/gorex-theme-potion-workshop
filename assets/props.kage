@@ -1,0 +1,113 @@
+package main
+
+// Potion Workshop background, the props layer: slow gold motes, and potion
+// bottles with a small slime on a shelf in the lower right of the window.
+// All shapes are distance fields; no images. Transparent elsewhere.
+
+var Time, Dark float
+var Origin, Window vec2
+
+// The color of the motes.
+//gorex:param color #db9929/#facc61
+var Gold vec3
+
+// How bright the motes are.
+//gorex:param number 1 0 1
+var Motes float
+
+// The shelf with the bottles and the slime.
+//gorex:param toggle on
+var Shelf float
+
+func sdRBox(p, b vec2, r float) float {
+	q := abs(p) - b + r
+	return length(max(q, 0)) + min(max(q.x, q.y), 0) - r
+}
+
+func fill(d float) float {
+	return clamp(0.5-d, 0, 1)
+}
+
+// over lays c at alpha a over d, premultiplied.
+func over(d vec4, c vec3, a float) vec4 {
+	a = clamp(a, 0, 1)
+	return vec4(c*a, a) + d*(1-a)
+}
+
+func Fragment(dst vec4, pos vec2) vec4 {
+	wp := pos + Origin
+	col := vec4(0)
+
+	// Gold motes rising slowly.
+	m := 0.0
+	for i := 0; i < 6; i++ {
+		f := float(i)
+		sx := fract(f*0.618 + 0.11)
+		sy := fract(f*0.371 + 0.23)
+		sp := 0.006 + 0.004*fract(f*0.53)
+		c := vec2(sx+0.015*sin(Time*0.4+f*1.7), 1.05-fract(sy+Time*sp)*1.1) * Window
+		r := length(wp - c)
+		tw := 0.6 + 0.4*sin(Time*1.3+f*2.3)
+		m = max(m, (clamp(1.4-r/2.4, 0, 1)+clamp(1-r/16, 0, 1)*0.4)*tw)
+	}
+	col = over(col, Gold, clamp(m, 0, 1)*mix(0.65, 0.8, Dark)*Motes)
+
+	// Bottles and a slime on a shelf, in the lower right. Each object
+	// draws only inside its own box, which keeps the cost low.
+	p := (wp - (Window - vec2(200, 150))) / 1.1
+	if Shelf > 0 && p.x > -130 && p.x < 140 && p.y > -110 && p.y < 110 {
+		ink := mix(vec3(0.35, 0.21, 0.11), vec3(0.08, 0.045, 0.025), Dark)
+		glass := mix(vec3(0.99, 0.96, 0.90), vec3(0.42, 0.30, 0.21), Dark)
+		cork := mix(vec3(0.72, 0.50, 0.30), vec3(0.50, 0.33, 0.19), Dark)
+		if p.y > 80 {
+			// the shelf and its shadow
+			plank := sdRBox(p-vec2(5, 88), vec2(132, 6), 2)
+			col = over(col, ink, clamp(1-abs(p.x-5)/150, 0, 1)*clamp(1-abs(p.y-100)/8, 0, 1)*0.35)
+			col = over(col, ink, fill(plank-2))
+			col = over(col, mix(vec3(0.80, 0.58, 0.34), vec3(0.42, 0.26, 0.14), Dark), fill(plank))
+		}
+		if p.x < -24 && p.y < 84 {
+			// the round flask of a rose potion
+			fl := length(p-vec2(-70, 40)) - 40
+			fneck := sdRBox(p-vec2(-70, -8), vec2(11, 18), 3)
+			fcork := sdRBox(p-vec2(-70, -30), vec2(14, 8), 3)
+			col = over(col, ink, fill(min(min(fl, fneck), fcork)-2.5))
+			col = over(col, cork, fill(fcork))
+			col = over(col, glass, fill(min(fl, fneck)))
+			col = over(col, mix(vec3(0.88, 0.48, 0.42), vec3(0.86, 0.45, 0.38), Dark), fill(max(fl+4, 34-p.y)))
+			col = over(col, vec3(1, 1, 1), fill(sdRBox(p-vec2(-88, 30), vec2(3, 12), 3))*0.7)
+			col = over(col, vec3(1, 0.95, 0.88), fill(length(p-vec2(-62, 52))-3.5)*0.8)
+		}
+		if abs(p.x) < 32 && p.y < 84 {
+			// the tall bottle of a teal potion
+			tb := sdRBox(p-vec2(0, 22), vec2(26, 58), 12)
+			tneck := sdRBox(p-vec2(0, -44), vec2(10, 14), 3)
+			tcork := sdRBox(p-vec2(0, -62), vec2(13, 8), 3)
+			col = over(col, ink, fill(min(min(tb, tneck), tcork)-2.5))
+			col = over(col, cork, fill(tcork))
+			col = over(col, glass, fill(min(tb, tneck)))
+			col = over(col, mix(vec3(0.25, 0.53, 0.49), vec3(0.38, 0.72, 0.65), Dark), fill(max(tb+4, 6-p.y)))
+			col = over(col, vec3(1, 1, 1), fill(sdRBox(p-vec2(-14, 10), vec2(3, 30), 3))*0.7)
+			col = over(col, vec3(1, 0.95, 0.88), fill(length(p-vec2(8, 40+mod(-Time*9, 30)))-3)*0.8)
+		}
+		q := p - vec2(78, 58)
+		if abs(q.x) < 50 && q.y > -54 && q.y < 26 {
+			// the slime: body, eyes, cheeks, smile and a leaf
+			sl := sdRBox(q, vec2(44, 22), 21)
+			sl = min(sl, length(q-vec2(-4, -14))-24)
+			lf := length((q-vec2(4, -40))*mat2(0.8, 0.6, -0.6, 0.8)/vec2(1, 2.2)) - 6
+			col = over(col, ink, fill(min(sl, lf)-2.5))
+			col = over(col, vec3(0.49, 0.55, 0.29), fill(lf))
+			col = over(col, mix(vec3(0.95, 0.60, 0.50), vec3(0.85, 0.50, 0.42), clamp(q.y/40+0.5, 0, 1)), fill(sl))
+			col = over(col, vec3(1, 0.93, 0.88), clamp(1-length((q-vec2(-18, -22))/vec2(10, 6)), 0, 1)*0.8)
+			e := vec2(abs(q.x+2)-13, q.y+2)
+			col = over(col, vec3(0.2, 0.11, 0.07), fill(length(e)-4.5))
+			col = over(col, vec3(1, 1, 1), fill(length(e-vec2(-1.5, -1.8))-1.5))
+			col = over(col, vec3(0.97, 0.45, 0.45), fill(length(vec2(abs(q.x+2)-23, q.y-6)/vec2(1.5, 1))-4)*0.6)
+			if q.y > 5 {
+				col = over(col, vec3(0.2, 0.11, 0.07), fill(abs(length(q-vec2(-2, 4))-6)-1.4))
+			}
+		}
+	}
+	return col
+}

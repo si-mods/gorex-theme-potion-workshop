@@ -1,0 +1,33 @@
+package main
+
+// Potion Workshop stitch: a dashed stitch near the edge of a face, where no
+// text sits. Transparent elsewhere.
+
+// The color of the thread.
+//gorex:param color #a88052/#a87a4a
+var Thread vec3
+
+// On: around all four edges, 1 DIP inside them. Off: along the bottom
+// edge only.
+//gorex:param toggle on
+var Around float
+
+// The length of a dash and its gap, in DIPs.
+//gorex:param number 7 4 12
+var Dash float
+
+func Fragment(dst vec4, pos vec2) vec4 {
+	s := rectSize()
+	on := false
+	if Around > 0 {
+		e := min(min(pos.x, s.x-pos.x), min(pos.y, s.y-pos.y))
+		on = e > 0.8 && e < 2 && fract((pos.x+pos.y)/Dash) < 0.55
+	} else {
+		b := s.y - pos.y
+		on = b > 0.6 && b < 1.9 && fract(pos.x/Dash) < 0.55
+	}
+	if on {
+		return vec4(Thread, 1)
+	}
+	return vec4(0)
+}

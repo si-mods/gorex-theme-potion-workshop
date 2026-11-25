@@ -1,0 +1,60 @@
+package main
+
+// Potion Workshop grain: fibers and grain over the paper under it, the
+// window's parchment or a face's flat color. Transparent elsewhere.
+
+var Dark float
+var Origin vec2
+
+// Grain strength in the light appearance.
+//gorex:param number 0.03 0 0.08
+var Grain float
+
+// Grain strength in the dark appearance.
+//gorex:param number 0.03 0 0.08
+var GrainDark float
+
+// Fine wavy fibers across all the paper.
+//gorex:param number 0.007 0 0.02
+var Wave float
+
+// Long fibers, here and there, in FiberColor.
+//gorex:param number 0 0 0.5
+var Fibers float
+
+// The color of the long fibers.
+//gorex:param color #cca875/#1a0f09
+var FiberColor vec3
+
+func hash(p vec2) float {
+	return fract(sin(dot(p, vec2(12.9898, 78.233))) * 43758.5453)
+}
+
+// over lays c at alpha a over d, premultiplied.
+func over(d vec4, c vec3, a float) vec4 {
+	a = clamp(a, 0, 1)
+	return vec4(c*a, a) + d*(1-a)
+}
+
+// speck darkens the paper by -v, or lightens it by v.
+func speck(d vec4, v float) vec4 {
+	if v < 0 {
+		return over(d, vec3(0, 0, 0), -v)
+	}
+	return over(d, vec3(1, 1, 1), v*mix(2, 1, Dark))
+}
+
+func Fragment(dst vec4, pos vec2) vec4 {
+	wp := pos + Origin
+	out := vec4(0)
+	if Wave > 0 {
+		out = speck(out, -Wave*sin(wp.y*0.9+sin(wp.x*0.023)*5.0))
+	}
+	if Fibers > 0 {
+		fb := sin(wp.y*0.85 + sin(wp.x*0.021+wp.y*0.006)*5.0)
+		mask := clamp(sin(wp.x*0.011+wp.y*0.017)*2-1, 0, 1)
+		out = over(out, FiberColor, clamp((fb-0.94)*12, 0, 1)*mask*Fibers)
+	}
+	out = speck(out, (hash(floor(wp))-0.5)*mix(Grain, GrainDark, Dark))
+	return out
+}

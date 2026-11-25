@@ -105,32 +105,65 @@
   },
   "assets": {
     "parchment": "parchment.kage",
+    "grain": "grain.kage",
+    "props": "props.kage",
     "shelf": "shelf.kage",
-    "sidepaper": "sidepaper.kage",
-    "rowpaper": "rowpaper.kage",
-    "headpaper": "headpaper.kage"
+    "stitch": "stitch.kage"
   },
   "shaders": {
-    "api": 1,
-    "background": {
-      "source": "parchment"
-    },
+    "api": 2,
+    "background": [
+      {
+        "source": "parchment"
+      },
+      {
+        "source": "grain",
+        "opacity": 0.75,
+        "params": {
+          "Grain": 0.06,
+          "GrainDark": 0.04,
+          "Wave": 0,
+          "Fibers": 0.29
+        }
+      },
+      {
+        "source": "props"
+      }
+    ],
     "faces": {
       "titleBar.background": {
         "source": "shelf"
       },
       "sideBar.background": {
-        "source": "sidepaper"
+        "source": "grain"
       },
-      "sideBar.tabActiveBackground": {
-        "source": "rowpaper"
-      },
-      "paneHeader.background": {
-        "source": "headpaper"
-      },
-      "sideBar.activeGroupTabBackground": {
-        "source": "rowpaper"
-      }
+      "sideBar.tabActiveBackground": [
+        {
+          "source": "grain"
+        },
+        {
+          "source": "stitch"
+        }
+      ],
+      "paneHeader.background": [
+        {
+          "source": "grain"
+        },
+        {
+          "source": "stitch",
+          "params": {
+            "Around": false
+          }
+        }
+      ],
+      "sideBar.activeGroupTabBackground": [
+        {
+          "source": "grain"
+        },
+        {
+          "source": "stitch"
+        }
+      ]
     }
   },
   "metrics": {
