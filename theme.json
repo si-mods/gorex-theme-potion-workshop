@@ -179,8 +179,5 @@
       "hard": true
     }
   },
-  "glass": false,
-  "brand": {
-    "wordmark": "POTION WORKSHOP"
-  }
+  "glass": false
 }

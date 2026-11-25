@@ -2,11 +2,9 @@
 
 A theme pack for [GoRex](https://github.com/si-mods/gorex): a warm fairy-tale apothecary on paper: parchment with fibers and grain, slow gold motes, a wooden shelf, potion bottles and a small slime. Light and dark.
 
-![Potion Workshop](screenshots/canvas-light.png)
+![Potion Workshop, light](screenshots/canvas-light.png)
 
-![Potion Workshop](screenshots/canvas-dark.png)
-
-![Potion Workshop](screenshots/tiled-light.png)
+![Potion Workshop, dark](screenshots/canvas-dark.png)
 
 The look follows the "Potion Workshop" preset of [codex-themes](https://github.com/freestylefly/codex-themes). The pack holds no image, code or text of that project: every picture in it is new art, drawn by the shaders in `assets/`. See [NOTICE](NOTICE).
 
@@ -16,16 +14,17 @@ The look follows the "Potion Workshop" preset of [codex-themes](https://github.c
 - Shaders: the window background in three layers (parchment with lamp glow and stains; fibers and grain at 75% opacity; motes, bottles and slime), the title bar as a wooden shelf, the sidebar column as grain over its paper color, and the chosen row and pane header as grain and a dashed stitch over their paper colors.
 - Roles: paper tones for the faces in each appearance, `pane.border` in brown.
 - Metrics: corner scale 0.5, 1 DIP borders, rounded then Segoe UI, hard shadows.
-- Glass off. Terminal: Lumina Parchment Light and Lumina Parchment Dark. Wordmark: POTION WORKSHOP.
+- Glass off. Terminal: Lumina Parchment Light and Lumina Parchment Dark.
 
 ## Install
 
-This pack uses shader API version 2 (`"shaders": {"api": 2}`, docs/DSK-012-theme-shaders.md), so it needs a GoRex build with shader API 2: the next release after 0.61.0. An older build loads the colors and draws the faces and the background flat, with a warning.
+This pack uses shader API version 2 (`"shaders": {"api": 2}`, docs/DSK-012-theme-shaders.md), so it needs GoRex 0.62.0 or later. An older build loads the colors and draws the faces and the background flat, with a warning.
 
 ```sh
-git clone https://github.com/si-mods/gorex-theme-potion-workshop
 gorex pack install gorex-theme-potion-workshop
 ```
+
+This installs the pack from the [GoRex registry](https://github.com/si-mods/gorex-registry), so GoRex can update it later (`gorex pack update`).
 
 Then select **Potion Workshop** on the Extensions page of the settings, or set `"appearance.theme": "gorex-theme-potion-workshop"` in `settings.json`.
 
